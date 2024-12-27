@@ -3,8 +3,9 @@ pip install pyinstaller
 
 # Sử dụng PyInstaller để tạo file exe, chạy ở chế độ không có cửa sổ console, đặt tên file là "Text-Replacer-by-drquochoai-no add data.exe" và không thêm thư mục data languages:
 pyinstaller --onefile --windowed --name "Text-Replacer-by-drquochoai" main.py
-# Copy the generated exe file to the updates directory
+pyinstaller --onefile --windowed --name "Text-Replacer-by-drquochoai" new.py
 xcopy dist\Text-Replacer-by-drquochoai.exe updates\ /Y
+# Copy the generated exe file to the updates directory
 
 # Remomix để combine all files to send to AI
 npm install -g repomix
