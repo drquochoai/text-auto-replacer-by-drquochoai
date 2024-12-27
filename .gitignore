@@ -1,14 +1,12 @@
 /.venv
 /backup code
-/backup_replacement_data.xlsx
 /build
+/dist
 /Text-Replacer-by-drquochoai.spec
+/backup_replacement_data.xlsx
 __pycache__/
 *.pyc
 /pyupdater
 /pyu-data
 /updates
-/*.build
-/*.dist
-/dist
 *.spec

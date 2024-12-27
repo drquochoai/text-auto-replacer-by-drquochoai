@@ -1,3 +1,4 @@
+from ast import Global
 from re import I
 import requests
 import logging
@@ -79,7 +80,7 @@ def parse_xlsx_for_replacements(workbook):
                 # Replace escaped newlines (\\n) with actual newlines (\n)
                 replacement = replacement.replace('\\n', '\n')
                 replacement_data[word] = replacement
-
+    # logging.info(f"rep {LINK_EDIT_FILE}")
     return replacement_data
 
 def load_xlsx_from_url(xlsx_url):
@@ -102,6 +103,7 @@ def load_xlsx_from_url(xlsx_url):
 
             # Remove the temporary file
             os.remove(temp_file)
+            logging.info(f"Set LINK_EDIT_FILE to: '{LINK_EDIT_FILE}'")
             return replacement_data
         except Exception as e:
             logging.error(f"Error loading XLSX file: {e}")
@@ -123,6 +125,7 @@ def save_xlsx_to_file(replacement_data, file_path):
     Save replacement data to a local XLSX file, including BEFORE_REPLACEMENT,
     AFTER_REPLACEMENT, and LINK_EDIT_FILE.
     """
+    global LINK_EDIT_FILE, BEFORE_REPLACEMENT, AFTER_REPLACEMENT  # Use global variables
     workbook = openpyxl.Workbook()
     sheet = workbook.create_sheet("Sheet1", 0)
     # Insert the header row
@@ -132,9 +135,9 @@ def save_xlsx_to_file(replacement_data, file_path):
     sheet.append(["BEFORE_REPLACEMENT", BEFORE_REPLACEMENT])
     after_replacement_to_save = AFTER_REPLACEMENT.replace(' ', '\u00A0')
     sheet.append(["AFTER_REPLACEMENT", after_replacement_to_save])
-
     sheet.append(["LINK_EDIT_FILE", LINK_EDIT_FILE])
 
+    
     # Insert the replacement data
     for word, replacement in replacement_data.items():
         sheet.append([word, replacement])

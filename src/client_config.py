@@ -3,4 +3,4 @@
 class ClientConfig(object):
     HTTP_TIMEOUT = 30
     UPDATE_URLS = ['http://localhost:8000/updates']
-    VERSION = "0.0.1"
+    VERSION = "0.0.2"

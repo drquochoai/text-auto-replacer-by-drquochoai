@@ -6,6 +6,7 @@ pyinstaller --onefile --windowed --name "Text-Replacer-by-drquochoai" main.py
 # Copy the generated exe file to the updates directory
 xcopy dist\Text-Replacer-by-drquochoai.exe updates\ /Y
 
+# Remomix để combine all files to send to AI
 npm install -g repomix
 repomix --remote https://github.com/drquochoai/text-auto-replacer-by-drquochoai --remote-branch modulas
 repomix --remote https://github.com/drquochoai/text-auto-replacer-by-drquochoai --remote-branch "4.-PyUpdater" --include **/*.py 

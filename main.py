@@ -36,6 +36,9 @@ def start_program():
             update_gui_language()
         except Exception as e:
             logging.error(f"Error downloading or processing language XLSX file: {e}")
+         # Update GUI fields after loading data
+        update_replacement_fields()
+        update_link_edit_file_field()
     else:
         logging.error("Failed to start program. Exiting program.")
 

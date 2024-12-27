@@ -1,5 +1,6 @@
 #!filepath: src/tkGUI.py
 # Updated imports: Removed unused imports.
+from math import log
 import requests
 import logging
 import tkinter as tk
@@ -37,18 +38,45 @@ def save_settings():
             config.write(configfile)
         logging.info("Settings saved successfully!")
 
+def load_replacement_data(xlsx_url):
+    """
+    Load replacement data from an XLSX file hosted online or from a local backup.
+    """
+    try:
+        # Try to download the XLSX from the internet
+        replacement_data = load_xlsx_from_url(xlsx_url)
+        if replacement_data:
+            # Save the downloaded XLSX to a local backup file
+            save_xlsx_to_file(replacement_data, BACKUP_XLSX_PATH)
+            logging.info(
+                "Replacement data loaded from the internet and saved to local backup."
+            )
+        return replacement_data
+
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error downloading data: {e}")
+        logging.info("Attempting to load replacement data from local backup...")
+
+        # If the download fails, try loading from the local backup file
+        if os.path.exists(BACKUP_XLSX_PATH):
+            return load_xlsx_from_file(BACKUP_XLSX_PATH)
+        else:
+            logging.error("No local backup file found. Exiting program.")
+            return {}
+
 def load_settings_and_data():
     """
     Loads settings from the .ini file and reloads the replacement data.
     """
-    global SHEET_URL, BEFORE_REPLACEMENT, AFTER_REPLACEMENT, current_replacement_data, LINK_EDIT_FILE
-
+    global SHEET_URL
     # Load settings from the .ini file
     config.read("settings.ini")
     SHEET_URL = config.get("Settings", "sheet_url", fallback=DEFAULT_SHEET_URL)
 
     # Reload the replacement data from the XLSX URL
     replacement_data = load_replacement_data(SHEET_URL)
+    global BEFORE_REPLACEMENT, AFTER_REPLACEMENT, current_replacement_data, LINK_EDIT_FILE
+    logging.info(f"Loaded replacement data: {LINK_EDIT_FILE} items.")
     if replacement_data:
         current_replacement_data = replacement_data  # Update the current replacement data
         logging.info("Replacement data reloaded successfully.")
@@ -56,6 +84,7 @@ def load_settings_and_data():
         # Update the Tkinter entry fields with the dynamic values
         update_replacement_fields()
         update_link_edit_file_field()  # Update the "Link Edit File" field
+        logging.info(f"Settings and data loaded successfully.{LINK_EDIT_FILE}")
         return replacement_data
     else:
         logging.error("Failed to reload replacement data.")
@@ -113,11 +142,13 @@ def update_replacement_fields():
     after_replacement_entry.delete(0, tk.END)  # Clear the entry field
     after_replacement_entry.insert(0, AFTER_REPLACEMENT)  # Insert the dynamic value
     after_replacement_entry.config(state="readonly")  # Disable editing again
+    
 
 def update_link_edit_file_field():
     link_edit_file_text.config(state="normal")  # Temporarily enable to update
     link_edit_file_text.delete("1.0", tk.END)  # Clear the entry field
     link_edit_file_text.insert("1.0", LINK_EDIT_FILE)  # Insert the dynamic value
+    # logging.info(f"Link Edit File updated to: '{LINK_EDIT_FILE}'")
     link_edit_file_text.config(state="disabled")  # Disable editing again
 
 # --- Program Control Functions ---
@@ -156,32 +187,6 @@ def open_google_sheet():
         webbrowser.open(url)
     else:
         messagebox.showwarning("No URL", "The 'Link Edit File' URL is not set.")
-
-def load_replacement_data(xlsx_url):
-    """
-    Load replacement data from an XLSX file hosted online or from a local backup.
-    """
-    try:
-        # Try to download the XLSX from the internet
-        replacement_data = load_xlsx_from_url(xlsx_url)
-        if replacement_data:
-            # Save the downloaded XLSX to a local backup file
-            save_xlsx_to_file(replacement_data, BACKUP_XLSX_PATH)
-            logging.info(
-                "Replacement data loaded from the internet and saved to local backup."
-            )
-        return replacement_data
-
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error downloading data: {e}")
-        logging.info("Attempting to load replacement data from local backup...")
-
-        # If the download fails, try loading from the local backup file
-        if os.path.exists(BACKUP_XLSX_PATH):
-            return load_xlsx_from_file(BACKUP_XLSX_PATH)
-        else:
-            logging.error("No local backup file found. Exiting program.")
-            return {}
 
 # --- GUI Setup ---
 
